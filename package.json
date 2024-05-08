@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --watchAll",
     "watch": "nodemon src/server.js",
-    "main": "src/index.js"
+    "start:": "node src/server.js"
   },
   "author": "",
   "license": "ISC",

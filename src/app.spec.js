@@ -1,5 +1,5 @@
 const request = require('supertest')
-const app = require('.')
+const app = require('./app')
 const { MongoClient } = require("mongodb");
 const UserRepository = require('./user-repository')
 
@@ -85,6 +85,11 @@ describe("UserApi", () => {
             test("Deve retornar status 404 para busca de usuário não existente", async () => { 
                 const response = await request(app).get(`/users/6639631872c7dedbf2398fa8`)
                 expect(response.statusCode).toBe(404)
+                expect(response.body).toStrictEqual({
+                    message: 'User not found',
+                    code: 404
+                })
+
             })
         })
 
@@ -117,6 +122,7 @@ describe("UserApi", () => {
         })
         test.todo("Não deve permitir a inclusão de usuários com e-mails duplicados")
         // Criar o usuário antes de tentar inserir o mesmo e-mail novamente
+        // Retornar status 400
     })
 
 

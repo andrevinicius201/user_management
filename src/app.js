@@ -34,7 +34,10 @@ app.get('/users/:id', async (req, res) => {
         const user = await userRepository.findOneById(new ObjectId(req.params.id))
         return res.json(user)
     } catch(e) {
-        return res.status(404).send()
+        return res.status(404).send({
+            message: 'User not found',
+            code: 404
+        })
     }
 })
 
@@ -43,8 +46,6 @@ app.post('/users', async(request, response) => {
     const user = await userRepository.insert(request.body)
     response.status(201).json(user)
 })
-
-app.listen(3000, () => console.log('Server running on port 3000'))
 
 
 module.exports = app;
