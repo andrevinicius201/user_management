@@ -23,7 +23,6 @@ describe("UserApi", () => {
         await client.close()
     })
 
-
     beforeEach(async () => {
         await collection.deleteMany({})
     })
@@ -72,30 +71,20 @@ describe("UserApi", () => {
                     name: 'John Doe',
                     email: 'john@doe.com'
                 })
-                
-                // const user = await request(app).post('/users').send({
-                //     name: 'John Doe',
-                //     email: 'john@doe.com'
-                // });
-    
-    
-                const retorno = await userRepository.findOneById({_id: user._id});
-    
-                
-            
+
+                const response = await request(app).get(`/users/${user._id}`)
+                    
                 expect(response.statusCode).toBe(200)
-                expect(retorno).toEqual(expect.objectContaining({
+                expect(response.body).toEqual(expect.objectContaining({
                     name: 'John Doe',
                     email: 'john@doe.com'  
                 }));
                 
             })
 
-            test("Deve retornar status 404 para busca de usuário não existente", async () => {
-                
+            test("Deve retornar status 404 para busca de usuário não existente", async () => { 
                 const response = await request(app).get(`/users/6639631872c7dedbf2398fa8`)
                 expect(response.statusCode).toBe(404)
-                
             })
         })
 

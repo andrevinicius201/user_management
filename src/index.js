@@ -14,7 +14,6 @@ app.use(bodyParser.json())
 
 app.use(async (req, res, next) => {
     if(!connected){
-
         const uri = 'mongodb://localhost:27017/'
         client = new MongoClient(uri)
         await client.connect()
@@ -30,19 +29,22 @@ app.get('/users', async(request, response) => {
     response.status(200).json(users)
 })
 
-app.get('/users/:id', async(request, response) => {
+app.get('/users/:id', async (req, res) => {
     try {
-        const user = await userRepository.findOneById(ObjectId(request.params.id))
-        response.json(user)
-    } catch (e) {
-        response.status(404).send()
+        const user = await userRepository.findOneById(new ObjectId(req.params.id))
+        return res.json(user)
+    } catch(e) {
+        return res.status(404).send()
     }
 })
+
 
 app.post('/users', async(request, response) => {
     const user = await userRepository.insert(request.body)
     response.status(201).json(user)
 })
+
+app.listen(3000, () => console.log('Server running on port 3000'))
 
 
 module.exports = app;
