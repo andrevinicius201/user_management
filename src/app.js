@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const UserRepository = require('./user-repository')
 
 const app = express()
-const port = 3000
 
 let userRepository;
 let client;
@@ -34,6 +33,7 @@ app.get('/users/:id', async (req, res) => {
         const user = await userRepository.findOneById(new ObjectId(req.params.id))
         return res.json(user)
     } catch(e) {
+        console.log(e)
         return res.status(404).send({
             message: 'User not found',
             code: 404
