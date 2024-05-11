@@ -23,6 +23,26 @@ describe('UserRepository', () => {
         await collection.deleteMany({})
     })
 
+    describe('insert', () => {
+        test('Deve inserir um novo usuário', async () => {
+
+            const newUser = await userRepository.insert({
+                name: "John Doe",
+                email: "john@doe.com"
+            })
+           
+
+            const foundUser = await userRepository.findOneByEmail("john@doe.com")
+            
+            expect(foundUser).toStrictEqual({
+                _id: newUser._id,
+                name: "John Doe",
+                email: "john@doe.com"
+            })
+            
+        })
+    })
+
     describe('findOneByEmail', () => {
         test('Deve retornar o usuário john@doe.com', async () => {
             const result = await collection.insertOne({
@@ -42,24 +62,26 @@ describe('UserRepository', () => {
         })
     })
 
-    describe('insert', () => {
-        test('Deve inserir um novo usuário', async () => {
-
-            const user = userRepository.insert({
-                name: "John Doe",
-                email: "john@doe.com"
+    describe('update', () => {
+        test('Deve atualizar um usuário existente', async() => {
+            
+            const newUser = await userRepository.insert({
+                name: 'John Doe',
+                email: 'john@doe.com'
             })
 
-            const result = userRepository.findOneByEmail("john@doe.com")
-            
-            expect(result).toStrictEqual(user)
-            
+            await userRepository.update('john@doe.com', 'John Cena')
+        
+            const result = await userRepository.findOneByEmail(newUser.email)
+            expect(result).toStrictEqual({
+                _id: newUser._id,
+                name: 'John Cena',
+                email: 'john@doe.com'
+            })
         })
-    })
-
-    describe('update', () => {
-        test.todo('Deve atualizar um usuário existente')
-        test.todo('Deve lançar uma exceção para um usuário não existente')
+        test('Deve lançar uma exceção para um usuário não existente', async() => {
+            await expect(userRepository.update('teste@teste.com', 'John Cena')).rejects.toThrow('User with specified e-mail does not exist')
+        })
     })
 
     describe('delete', () => {
@@ -74,11 +96,39 @@ describe('UserRepository', () => {
             await userRepository.delete(user._id)
             await expect(userRepository.findOneByEmail('john@doe.com')).rejects.toThrow()
         })
-        test.todo('Deve lançar uma exceção para um usuário não existente')
+        test('Deve lançar uma exceção para um usuário não existente', async() => {
+            await expect(userRepository.delete('john@doe.com')).rejects.toThrow('Specified user was not found')
+        })
     })
 
     describe('findAll', () => {
-        test.todo('Deve retornar uma lista vazia de usuários')
-        test.todo('Deve retornar uma lista contendo dois usuários')
+        test('Deve retornar uma lista vazia de usuários', async() => {
+            const users = await userRepository.findAll()
+            expect(users).toStrictEqual([])
+        })
+
+        test('Deve retornar uma lista contendo dois usuários', async() => {
+            const firstUser = await userRepository.insert({
+                name: 'John Doe',
+                email: 'john@doe'
+            })
+            const secondUser = await userRepository.insert({
+                name: 'John Cena',
+                email: 'john@cena'
+            })
+            const users = await userRepository.findAll()
+            expect(users).toStrictEqual([
+                {
+                    _id: firstUser._id,
+                    name: 'John Doe',
+                    email: 'john@doe'
+                },
+                {
+                    _id: secondUser._id,
+                    name: 'John Cena',
+                    email: 'john@cena'
+                }
+            ])
+        })
     })
 })

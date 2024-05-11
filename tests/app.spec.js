@@ -89,18 +89,62 @@ describe("UserApi", () => {
                     message: 'User not found',
                     code: 404
                 })
-
             })
         })
 
-        describe("/PUT/:id", () => {
-            test.todo("Deve atualizar os dados de um usuário")
-            test.todo("Deve recusar a inclusão de usuários com e-mails duplicados")
+        describe("/PUT/", () => {
+            test("Deve atualizar os dados de um usuário", async() => {
+                
+                const newUser = await userRepository.insert({
+                    name: 'John Doe',
+                    email: 'john@doe.com'
+                })
+
+                const response = await request(app).put(`/users/${newUser.email}`).send({
+                    name: 'Ronaldinho Gaucho',
+                    email: 'ronaldinho@gaucho.com'
+                });
+
+                expect(response.statusCode).toBe(201);
+                
+            })
+            test("Deve recusar a inclusão de usuários com e-mails duplicados", async() => {
+                
+                await userRepository.insert({
+                    name: 'John Doe',
+                    email: 'john@doe.com'
+                })
+                
+                const response = await request(app).post(`/users`).send({
+                    name: 'John Doe',
+                    email: 'john@doe.com'
+                });
+
+                expect(response.statusCode).toBe(401);
+    
+
+            })
         })
         
         describe("/DELETE/:id", () => {
-            test.todo("Deve deletar um usuário")
-            test.todo("Deve retornar status 404 na tentativa de deleção de um usuário inexistente")
+            test("Deve deletar um usuário", async() => {
+                const newUser = await userRepository.insert({
+                    name: 'John Doe',
+                    email: 'john@doe.com'
+                })
+
+                const response = await request(app).delete(`/users/${newUser._id}`)
+
+                expect(response.statusCode).toBe(204)
+            })
+            test("Deve retornar status 404 na tentativa de deleção de um usuário inexistente", async() => {
+                const response = await request(app).delete(`/users/6639631872c7dedbf2398fa8`)
+                expect(response.statusCode).toBe(404)
+                expect(response.body).toStrictEqual({
+                    message: 'User not found',
+                    code: 404
+                })
+            })
         })
     })
 
@@ -120,7 +164,20 @@ describe("UserApi", () => {
                 email: 'john@doe.com'  
             }));
         })
-        test.todo("Não deve permitir a inclusão de usuários com e-mails duplicados")
+        test("Não deve permitir a inclusão de usuários com e-mails duplicados", async() => {
+            await userRepository.insert({
+                name: 'John Doe',
+                email: 'john@doe.com'
+            })
+
+            const response = await request(app).post('/users').send({
+                name: 'John Doe',
+                email: 'john@doe.com'
+            });
+
+            expect(response.statusCode).toBe(401);
+
+        })
         // Criar o usuário antes de tentar inserir o mesmo e-mail novamente
         // Retornar status 400
     })

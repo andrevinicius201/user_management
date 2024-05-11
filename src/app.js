@@ -41,9 +41,39 @@ app.get('/users/:id', async (req, res) => {
 })
 
 app.post('/users', async(request, response) => {
-    const user = await userRepository.insert(request.body)
-    response.status(201).json(user)
+    try {
+        const user = await userRepository.insert(request.body)
+        response.status(201).json(user)
+    } catch(e) {
+        return response.status(401).send({
+            message: 'Duplicated user',
+            code: 401
+        })
+    }
 })
 
+app.put('/users/:email', async(req, res) => {
+    try {
+        const user = await userRepository.update(req.params.email, req.body.email)
+        res.status(201).json(user)
+    } catch(e) {
+        return res.status(404).send({
+            message: 'User not found',
+            code: 404
+        })
+    }
+})
+
+app.delete('/users/:id', async(req, res) => {
+    try {
+        await userRepository.delete(new ObjectId(req.params.id))
+        res.status(204).send()
+    } catch(e) {
+        return res.status(404).send({
+            message: 'User not found',
+            code: 404
+        })
+    }
+})
 
 module.exports = app;

@@ -35,7 +35,7 @@ jobs:
       - run: npm run audit 
 
   tests:
-    name: Testes de unidade e integração
+    name: Testes de sistema e integração
     runs-on: ubuntu-latest
 
     services:
