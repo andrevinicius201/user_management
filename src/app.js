@@ -33,14 +33,12 @@ app.get('/users/:id', async (req, res) => {
         const user = await userRepository.findOneById(new ObjectId(req.params.id))
         return res.json(user)
     } catch(e) {
-        console.log(e)
         return res.status(404).send({
             message: 'User not found',
             code: 404
         })
     }
 })
-
 
 app.post('/users', async(request, response) => {
     const user = await userRepository.insert(request.body)

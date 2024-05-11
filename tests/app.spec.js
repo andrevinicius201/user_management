@@ -1,7 +1,7 @@
 const request = require('supertest')
-const app = require('./app')
+const app = require('../src/app')
 const { MongoClient } = require("mongodb");
-const UserRepository = require('./user-repository')
+const UserRepository = require('../src/user-repository')
 
 
 describe("UserApi", () => {
