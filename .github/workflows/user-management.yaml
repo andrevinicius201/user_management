@@ -35,19 +35,21 @@ jobs:
       - run: npm audit 
 
   tests:
+    env:
+      CI: true
+      MONGO_URL: mongodb://localhost:27017/
+    strategy:
+      matrix:
+        mongodb-version: [latest]
+    
     name: Testes de sistema e integração
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongodb
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: root
-        ports:
-          - 27017:27017
-
     steps:
+      - name: Use MongoDB from GitHub actions
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
       - uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
@@ -56,3 +58,4 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - run: npm ci
+      - run: npm run test

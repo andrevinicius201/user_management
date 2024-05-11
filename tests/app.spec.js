@@ -36,12 +36,12 @@ describe("UserApi", () => {
             })
 
             test("Deve retornar uma lista contendo dois usuários", async () => {
-                await userRepository.insert({
+                const firstUser = await userRepository.insert({
                     name: 'John Doe',
                     email: 'john@doe.com'
                 })
 
-                await userRepository.insert({
+                const secondUser = await userRepository.insert({
                     name: 'Bob Doe',
                     email: 'bob@doe.com'
                 })
@@ -49,15 +49,9 @@ describe("UserApi", () => {
 
                 const response = await request(app).get('/users');
                 expect(response.statusCode).toBe(200)
-                expect(response.body[0]).toEqual(expect.objectContaining({
-                    name: 'John Doe',
-                    email: 'john@doe.com'
-                }))
-
-                expect(response.body[1]).toEqual(expect.objectContaining({
-                    name: 'Bob Doe',
-                    email: 'bob@doe.com'
-                }))
+                expect(response.text).toStrictEqual(
+                `[{"_id":"${firstUser._id}","name":"John Doe","email":"john@doe.com"},{"_id":"${secondUser._id}","name":"Bob Doe","email":"bob@doe.com"}]`
+                )
             })
 
         })
@@ -68,16 +62,16 @@ describe("UserApi", () => {
             test("Deve retornar os dados de um usuário", async() => {
 
                 const user = await userRepository.insert({
-                    name: 'John Doe',
-                    email: 'john@doe.com'
+                    name: "John Doe",
+                    email: "john@doe.com"
                 })
 
                 const response = await request(app).get(`/users/${user._id}`)
                     
                 expect(response.statusCode).toBe(200)
                 expect(response.body).toEqual(expect.objectContaining({
-                    name: 'John Doe',
-                    email: 'john@doe.com'  
+                    name: "John Doe",
+                    email: "john@doe.com"  
                 }));
                 
             })

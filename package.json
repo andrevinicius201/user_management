@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --watchAll --detectOpenHandles",
+    "test:watch": "jest --watchAll --detectOpenHandles",
+    "test": "jest",
     "watch": "nodemon src/server.js",
     "start:": "node src/server.js",
     "lint": "eslint src/**",
