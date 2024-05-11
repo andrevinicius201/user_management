@@ -19,3 +19,41 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm run lint
+  
+  vulnerability:
+    name: Teste de vulnerabilidades
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm run audit 
+
+  tests:
+    name: Testes de unidade e integração
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongodb
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: root
+        ports:
+          - 27017:27017
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm run audit
